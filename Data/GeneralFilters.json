@@ -1,0 +1,72 @@
+[
+  {
+    "Name": "IT Department",
+    "Count": 8,
+    "Category": 0
+  },
+  {
+    "Name": "HR Department",
+    "Count": 2,
+    "Category": 0
+  },
+  {
+    "Name": "UX Department",
+    "Count": 1,
+    "Category": 0
+  },
+  {
+    "Name": "Sharepoint Practice Head",
+    "Count": 0,
+    "Category": 1
+  },
+  {
+    "Name": "Web Developer",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "Operations Manager",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "Product Manager",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "Software Engineer",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "Lead Engineer Dot Net",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "UI Designer",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "Talent Magnet Jr.",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "Junior Software Developer",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "Head HR",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "Developer",
+    "Count": 2,
+    "Category": 1
+  }
+]

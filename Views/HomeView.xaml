@@ -1,0 +1,162 @@
+﻿<UserControl x:Class="EmployeeDirectory.Caliburn.Views.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EmployeeDirectory.Caliburn.Views" 
+             xmlns:converters="clr-namespace:EmployeeDirectory.Caliburn.Converters" 
+             xmlns:fa5="http://schemas.fontawesome.com/icons/"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:JobTitleToColorConverter x:Key="Ed.Converters.JobToColorConv"/>
+    </UserControl.Resources>
+    <Grid>
+        <DockPanel x:Name="Main" >
+            <Grid Margin="0 20 0 0"  DockPanel.Dock="Top" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="70"></RowDefinition>
+                    <RowDefinition ></RowDefinition>
+                </Grid.RowDefinitions>
+                <Image HorizontalAlignment="Left" Source="/EmployeeDirectory.Caliburn;component/Images/saketa-logo.jpg" Width="170" />
+                <WrapPanel  Margin="20 0 0 0" Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <TextBlock Style="{StaticResource Ed.PrimaryHeading}"  Margin="0" Text="Employee Directory"/>
+                    <TextBlock FontSize="{StaticResource Ed.FontSize.SecondaryFontSize}" Text="The Ultimate People Directory Experience"/>
+                </WrapPanel>
+                <WrapPanel  Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock Text="Welcome," FontSize="{StaticResource Ed.FontSize.GreetUserFontSize}" VerticalAlignment="Bottom" Foreground="{StaticResource Ed.Colors.PrimaryColour}"  />
+                    <TextBlock Text=" Andrew Philips" FontSize="{StaticResource Ed.FontSize.GreetUserFontSize}" VerticalAlignment="Bottom"/>
+                    <Ellipse Margin="3 0 10 0" Width="50" Height="50" Grid.Column="2" >
+                        <Ellipse.Fill>
+                            <ImageBrush ImageSource="/EmployeeDirectory.Caliburn;component/Images/andrew-philips.png"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                </WrapPanel>
+                <Separator Margin="10" Grid.Row="1" Grid.ColumnSpan="3"/>
+            </Grid>
+
+            <WrapPanel  Margin="20 30 0 0"  DockPanel.Dock="Left" Orientation="Vertical">
+                <TextBlock Text="Departments" Margin="0 0 0 3" FontWeight="{StaticResource Ed.FontWeight.DemiBold}" FontSize="{StaticResource Ed.FontSize.SecondaryFontSize}"/>
+                <ListBox x:Name="Departments" SelectedItem="{Binding SelectedDept}" ItemTemplate="{StaticResource GeneralFilterTemplate}" SelectionMode="Single" BorderBrush="Black" BorderThickness="0 0 0 1"/>
+                <TextBlock Margin="0 5 0 3" FontWeight="{StaticResource Ed.FontWeight.DemiBold}" FontSize="{StaticResource Ed.FontSize.SecondaryFontSize}" Text="Job Titles"/>
+                <ListBox ItemsSource="{Binding JobTitles}" SelectedItem="{Binding SelectedJobTitle}" ItemTemplate="{StaticResource GeneralFilterTemplate}"  
+                         SelectionMode="Single" BorderThickness="0">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsVisible}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+                <Button HorizontalAlignment="Left" x:Name="ViewMore"
+                        Foreground="{StaticResource Ed.Colors.PrimaryColour}" 
+                        Background="Transparent" 
+                        BorderBrush="Transparent" 
+                        Content="{Binding ViewMoreBtnContent}"/>
+            </WrapPanel>
+            <Grid Margin="20 5 0 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="70"></RowDefinition>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="210"/>
+                    <ColumnDefinition Width="230"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button  Grid.Column="2"
+                         Content="Add Employee"
+                         Style="{StaticResource Ed.Buttons.AddEmp}"
+                         HorizontalAlignment="Right"/>
+                <DataGrid x:Name="FilteredEmployees" AreRowDetailsFrozen="True" FrozenColumnCount="1"  Grid.Row="1" Grid.ColumnSpan="3" 
+                          SelectedItem="{Binding SelectedEmployee}" 
+                          Margin="0 0 10 20" 
+                          Style="{StaticResource Ed.DataGridStyle}"  
+                          AlternatingRowBackground="#EEEEF2">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="150" Header="Name">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                            <Run Text="{Binding FirstName}"/>
+                                            <Run Text="{Binding LastName}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Email" Binding="{Binding Email}"/>
+                        <DataGridTextColumn Header="Age" Binding="{Binding Dob, Converter={converters:DobToAgeConverter}, StringFormat={}{0} years old}"/>
+                        <DataGridTextColumn CellStyle="{StaticResource Ed.DataGrid.GenderCellStyle}" Header="Gender" Binding="{Binding Gender}"/>
+                        <DataGridTemplateColumn Header="JobTitle">
+                            <DataGridTemplateColumn.CellTemplate >
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding JobTitle}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" >
+                                                <Setter Property="Background" Value="{Binding JobTitle, Converter={StaticResource Ed.Converters.JobToColorConv}}"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Height" Value="20"/>
+                                                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                            </Style>
+                                        </TextBlock.Style>
+                                        <TextBlock.ToolTip>
+                                            <TextBlock Text="{Binding JobTitle}"/>
+                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Department" Binding="{Binding Department}"/>
+                        <DataGridTextColumn Header="Experience" Binding="{Binding ExperienceInYears}"/>
+                        <DataGridTextColumn Header="Contact" Binding="{Binding ContactNumber}"/>
+                        <DataGridTextColumn  Header="Salary" Binding="{Binding Salary}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock" >
+                                    <Setter Property="Foreground" Value="{Binding Salary, Converter={converters:SalaryRangeToColorConverter}}"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTemplateColumn >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button  BorderThickness="0" BorderBrush="Transparent" Background="Transparent">
+                                            <Button.Content>
+                                                <fa5:ImageAwesome Icon="Solid_UserEdit" Width="20" Height="20" Foreground="{StaticResource Ed.Colors.PrimaryColour}"/>
+                                            </Button.Content>
+                                        </Button>
+                                        <Button Grid.Column="1" BorderThickness="0" BorderBrush="Transparent" Background="Transparent">
+                                            <Button.Content>
+                                                <fa5:ImageAwesome x:Name="Delete" Icon="Solid_Trash" Width="20" Height="20" Foreground="Red"/>
+                                            </Button.Content>
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <WrapPanel Orientation="Horizontal" Style="{StaticResource Ed.AdvancedFilterStyle}" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <TextBlock Margin="0 5 5 0" Text="Search:"/>
+                    <TextBox Name="Search" Text="{Binding SearchInput, UpdateSourceTrigger=PropertyChanged}" Padding="5" Height="30" Width="150" />
+                </WrapPanel>
+                <WrapPanel Orientation="Horizontal" Style="{StaticResource Ed.AdvancedFilterStyle}" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Margin="0 5 5 0" Text="Filter By:"/>
+                    <ComboBox Name="Filter" ItemsSource="{Binding FilterCategories}"  SelectedItem="{Binding FilterInput}" Padding="6" Height="30" Width="150"/>
+                </WrapPanel>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</UserControl>

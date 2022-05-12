@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Data\Employee.json" />
+    <None Remove="Data\GeneralFilters.json" />
+    <None Remove="Images\andrew-philips.png" />
+    <None Remove="Images\saketa-logo.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Caliburn.Micro" Version="4.0.173" />
+    <PackageReference Include="FontAwesome5" Version="2.1.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Data\Employee.json" />
+    <Resource Include="Data\GeneralFilters.json" />
+    <Resource Include="Images\andrew-philips.png" />
+    <Resource Include="Images\saketa-logo.jpg" />
+  </ItemGroup>
+
+</Project>
