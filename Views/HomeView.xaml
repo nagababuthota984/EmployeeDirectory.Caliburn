@@ -44,7 +44,7 @@
                 <TextBlock Text="Departments" Margin="0 0 0 3" FontWeight="{StaticResource Ed.FontWeight.DemiBold}" FontSize="{StaticResource Ed.FontSize.SecondaryFontSize}"/>
                 <ListBox x:Name="Departments" SelectedItem="{Binding SelectedDept}" ItemTemplate="{StaticResource GeneralFilterTemplate}" SelectionMode="Single" BorderBrush="Black" BorderThickness="0 0 0 1"/>
                 <TextBlock Margin="0 5 0 3" FontWeight="{StaticResource Ed.FontWeight.DemiBold}" FontSize="{StaticResource Ed.FontSize.SecondaryFontSize}" Text="Job Titles"/>
-                <ListBox ItemsSource="{Binding JobTitles}" SelectedItem="{Binding SelectedJobTitle}" ItemTemplate="{StaticResource GeneralFilterTemplate}"  
+                <ListBox x:Name="JobTitles" SelectedItem="{Binding SelectedJobTitle}" ItemTemplate="{StaticResource GeneralFilterTemplate}"  
                          SelectionMode="Single" BorderThickness="0">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
@@ -72,10 +72,12 @@
                     <ColumnDefinition Width="230"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button  Grid.Column="2"
+                <Button  Grid.Column="2" x:Name="AddEmployee"
                          Content="Add Employee"
                          Style="{StaticResource Ed.Buttons.AddEmp}"
                          HorizontalAlignment="Right"/>
+                
+                <!--to be reviewed-->
                 <DataGrid x:Name="FilteredEmployees" AreRowDetailsFrozen="True" FrozenColumnCount="1"  Grid.Row="1" Grid.ColumnSpan="3" 
                           SelectedItem="{Binding SelectedEmployee}" 
                           Margin="0 0 10 20" 

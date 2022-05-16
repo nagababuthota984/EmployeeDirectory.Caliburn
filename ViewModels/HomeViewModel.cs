@@ -22,9 +22,9 @@ namespace EmployeeDirectory.Caliburn.ViewModels
         private GeneralFilter _selectedDept;
         private GeneralFilter _selectedJobTitle;
         private BindableCollection<Employee> _filteredEmployees;
-
+        private readonly IEventAggregator _eventAggregator;
+        private AddEditEmployeeViewModel _addEditEmpVM;
         #endregion
-       
         #region Properties
 
         public string SearchInput
@@ -80,8 +80,10 @@ namespace EmployeeDirectory.Caliburn.ViewModels
         }
 
         #endregion
-        public HomeViewModel()
+        public HomeViewModel(IEventAggregator eventAggregator, AddEditEmployeeViewModel addEditEmpVM)
         {
+            _eventAggregator = eventAggregator;
+            _addEditEmpVM = addEditEmpVM;
             Employees = new BindableCollection<Employee>(EmployeeData.Employees);
             FilteredEmployees = Employees;
             Departments = new BindableCollection<GeneralFilter>(EmployeeData.Departments);
@@ -89,7 +91,6 @@ namespace EmployeeDirectory.Caliburn.ViewModels
             FilterCategories = Enum.GetNames(typeof(FilterCategories));
             FilterInput = FilterCategories[0];
             LoadJobTitles();
-
         }
 
         private void LoadJobTitles()
@@ -97,6 +98,7 @@ namespace EmployeeDirectory.Caliburn.ViewModels
             if (EmployeeData.JobTitles.Count >= 6)
                 EmployeeData.JobTitles.Take(6).ToList().ForEach(job => job.IsVisible = true);
             JobTitles = new(EmployeeData.JobTitles);
+            
         }
 
         public void ViewMore()
@@ -113,9 +115,9 @@ namespace EmployeeDirectory.Caliburn.ViewModels
             }
         }
 
-        private void OnAddEmp()
+        public void AddEmployee()
         {
-           
+            _eventAggregator.PublishOnUIThreadAsync(_addEditEmpVM);
         }
         private void OnEditEmp()
         {

@@ -1,22 +1,25 @@
 ﻿using Caliburn.Micro;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EmployeeDirectory.Caliburn.ViewModels
 {
-    public class MainViewModel : Conductor<object>
+    public class MainViewModel : Conductor<object>, IHandle<Screen>
     {
-        #region Fields
-        private object _currentViewModel;
-        #endregion
-        #region Properties
-        public object CurrentViewModel
+        private readonly IEventAggregator _eventAggregator;
+
+        public MainViewModel(IEventAggregator eventAggregator, HomeViewModel homevm)
         {
-            get { return _currentViewModel; }
-            set { _currentViewModel = value; NotifyOfPropertyChange(nameof(CurrentViewModel)); }
+            _eventAggregator = eventAggregator;
+            _eventAggregator.Subscribe(this);
+            ActivateItemAsync(homevm);
         }
-        #endregion
-        public MainViewModel()
+
+        public Task HandleAsync(Screen screenToDisplay, CancellationToken cancellationToken)
         {
-            ActivateItemAsync(new HomeViewModel());
+            if(screenToDisplay!=null)
+                return ActivateItemAsync(screenToDisplay, cancellationToken);
+            return null;
         }
     }
 }
