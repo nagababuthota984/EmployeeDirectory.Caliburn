@@ -24,5 +24,7 @@ namespace EmployeeDirectory.Caliburn.Views
         {
             InitializeComponent();
         }
+
+        
     }
 }

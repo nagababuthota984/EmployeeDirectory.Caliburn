@@ -1,4 +1,5 @@
-﻿using static EmployeeDirectory.Caliburn.Models.Enums;
+﻿using Caliburn.Micro;
+using static EmployeeDirectory.Caliburn.Models.Enums;
 
 namespace EmployeeDirectory.Caliburn.Models
 {
@@ -7,7 +8,7 @@ namespace EmployeeDirectory.Caliburn.Models
         public string Name { get; set; }
         public int Count { get; set; }
         public GeneralFilterCategories Category { get; set; }
-        public bool IsVisible { get; set; }
+       
 
     }
 }

@@ -5,8 +5,66 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EmployeeDirectory.Caliburn.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <TextBlock Text="Add or edit employee details here" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30"/>
+             MinWidth="1300" MinHeight="800">
+    <Grid DataContext="{Binding SelectedEmployee,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Left" Margin="20" Grid.IsSharedSizeScope="True" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition  SharedSizeGroup="colGroup" />
+            <ColumnDefinition   SharedSizeGroup="colGroup"/>
+            <ColumnDefinition Width="Auto"  SharedSizeGroup="colGroup"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition   SharedSizeGroup="rowGroup"/>
+            <RowDefinition   SharedSizeGroup="rowGroup"/>
+            <RowDefinition   SharedSizeGroup="rowGroup"/>
+            <RowDefinition Height="Auto" SharedSizeGroup="rowGroup"/>
+            <RowDefinition  SharedSizeGroup="rowGroup"/>
+        </Grid.RowDefinitions>
+        <TextBlock Name="Heading" Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}},Path=DataContext.HeadingText}" Style="{StaticResource Ed.PrimaryHeading}" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <Separator Margin="0 0 0 10" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Height="1" />
+        <TextBlock  Style="{StaticResource Ed.Labels.FormLabelText}" Grid.Row="1" Text="First Name" Grid.ColumnSpan="2" />
+        <TextBox  Text="{Binding FirstName, ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource Ed.TextBoxStyle}" Name="fname" Grid.Row="1" />
+        <TextBlock Style="{StaticResource Ed.Labels.FormLabelText}" Grid.Row="2" Text="Email " Grid.ColumnSpan="2" />
+        <TextBox Text="{Binding Email, ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Ed.TextBoxStyle}" Name="email" Grid.Row="2"/>
+        <TextBlock Style="{StaticResource Ed.Labels.FormLabelText }" Grid.Row="3" Text="Job Title" Grid.ColumnSpan="2"/>
+        <TextBox Text="{Binding JobTitle, ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Ed.TextBoxStyle}" Name="jobtitle" Grid.Row="3"/>
+        <TextBlock Style="{StaticResource Ed.Labels.FormLabelText }" Grid.Row="1" Grid.Column="1" Text="Department" Grid.ColumnSpan="2"/>
+        <TextBox Text="{Binding Department, ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Ed.TextBoxStyle}" Name="department" Grid.Row="1" Grid.Column="1"/>
+        <TextBlock Style="{StaticResource Ed.Labels.FormLabelText }" Grid.Row="2" Grid.Column="1" Text="Last Name" Grid.ColumnSpan="2"/>
+        <TextBox Text="{Binding LastName, ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Ed.TextBoxStyle}" Name="lname" Grid.Row="2" Grid.Column="1" Height="30"/>
+        <TextBlock Style="{StaticResource Ed.Labels.FormLabelText }" Grid.Row="3" Grid.Column="1" Text="Date Of Birth" Grid.ColumnSpan="2"/>
+        <DatePicker SelectedDate="{Binding Dob}" Name="dob" Padding="5" Grid.Row="3" Grid.Column="1" Height="30" Margin="0 18 10 10"/>
+        <TextBlock Style="{StaticResource Ed.Labels.FormLabelText}" Grid.Row="1" Grid.Column="2" Text="Salary" />
+        <TextBox Text="{Binding Salary, ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Ed.TextBoxStyle}" Name="salary"  Grid.Row="1" Grid.Column="2"/>
+        <TextBlock Style="{StaticResource Ed.Labels.FormLabelText }" Grid.Row="2" Grid.Column="2" Text="Experience in Years"/>
+        <TextBox Text="{Binding ExperienceInYears, ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Ed.TextBoxStyle}"  Name="experience"  Grid.Row="2" Grid.Column="2"/>
+        <TextBlock Style="{StaticResource Ed.Labels.FormLabelText }" Grid.Row="3" Grid.Column="2" Text="Contact Number" />
+        <TextBox Text="{Binding ContactNumber, ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Ed.TextBoxStyle}" Name="contactNumber"  Grid.Row="3" Grid.Column="2"/>
+        <Button x:Name="Submit" 
+                Grid.Row="4" HorizontalAlignment="Left"
+                Content="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}},Path=DataContext.OkBtnContent}">
+            <Button.Style>
+                <Style TargetType="Button" BasedOn="{StaticResource Ed.Buttons.AddEmp}">
+                    <Setter Property="IsEnabled" Value="False"/>
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Path=(Validation.HasError),ElementName=fname}" Value="False"/>
+                                <Condition Binding="{Binding Path=(Validation.HasError),ElementName=lname}" Value="False"/>
+                                <Condition Binding="{Binding Path=(Validation.HasError),ElementName=jobtitle}" Value="False"/>
+                                <Condition Binding="{Binding Path=(Validation.HasError),ElementName=department}" Value="False"/>
+                                <Condition Binding="{Binding Path=(Validation.HasError),ElementName=contactNumber}" Value="False"/>
+                                <Condition Binding="{Binding Path=(Validation.HasError),ElementName=experience}" Value="False"/>
+                                <Condition Binding="{Binding Path=(Validation.HasError),ElementName=salary}" Value="False"/>
+                                <Condition Binding="{Binding Path=(Validation.HasError),ElementName=email}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="IsEnabled" Value="True"/>
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+        <Button  x:Name="OnCancel"
+                 Content="Cancel"  Style="{StaticResource Ed.Buttons.Cancel}" Grid.Row="4" HorizontalAlignment="Right" Margin="0 0 20 0"  />
     </Grid>
 </UserControl>

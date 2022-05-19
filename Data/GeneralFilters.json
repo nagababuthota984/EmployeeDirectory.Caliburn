@@ -1,24 +1,20 @@
 [
   {
     "Name": "IT Department",
-    "Count": 8,
+    "Count": 15,
     "Category": 0
   },
   {
     "Name": "HR Department",
-    "Count": 2,
+    "Count": 4,
     "Category": 0
   },
   {
     "Name": "UX Department",
     "Count": 1,
     "Category": 0
-  },
-  {
-    "Name": "Sharepoint Practice Head",
-    "Count": 0,
-    "Category": 1
-  },
+  }
+,
   {
     "Name": "Web Developer",
     "Count": 1,
@@ -61,12 +57,37 @@
   },
   {
     "Name": "Head HR",
-    "Count": 1,
+    "Count": 2,
     "Category": 1
   },
   {
     "Name": "Developer",
+    "Count": 4,
+    "Category": 1,
+  },
+  {
+    "Name": "Angular Developer",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "React Developer",
     "Count": 2,
+    "Category": 1
+  },
+  {
+    "Name": "HR Consultant",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "Tester",
+    "Count": 1,
+    "Category": 1
+  },
+  {
+    "Name": "Lead Developer Dot Net",
+    "Count": 1,
     "Category": 1
   }
 ]

@@ -1,28 +1,30 @@
 ﻿using Caliburn.Micro;
 using EmployeeDirectory.Caliburn.Data;
 using EmployeeDirectory.Caliburn.Models;
+using EmployeeDirectory.Caliburn.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using static EmployeeDirectory.Caliburn.Models.Enums;
 
 namespace EmployeeDirectory.Caliburn.ViewModels
 {
-    public class HomeViewModel : Screen
+    public class HomeViewModel : Screen, IHandle<Employee>
     {
         #region Fields
         private string _searchInput;
         private string _filterInput;
         private string _viewMoreBtnContent;
-        private BindableCollection<Employee> _employees;
-        private BindableCollection<GeneralFilter> _departments;
-        private BindableCollection<GeneralFilter> _jobtitles;
-        private Employee _selectedEmployee;
+        private ObservableCollection<GeneralFilter> _departments;
+        private ObservableCollection<GeneralFilter> _jobtitles;
         private GeneralFilter _selectedDept;
         private GeneralFilter _selectedJobTitle;
-        private BindableCollection<Employee> _filteredEmployees;
+        private ObservableCollection<Employee> _filteredEmployees;
         private readonly IEventAggregator _eventAggregator;
+        private ObservableCollection<GeneralFilter> _visibleJobTitles;
         private AddEditEmployeeViewModel _addEditEmpVM;
         #endregion
         #region Properties
@@ -30,126 +32,185 @@ namespace EmployeeDirectory.Caliburn.ViewModels
         public string SearchInput
         {
             get { return _searchInput; }
-            set { _searchInput = value; FilterEmployeesBySearch(value); NotifyOfPropertyChange(nameof(SearchInput)); }
+            set 
+            { 
+                _searchInput = value; 
+                FilteredEmployees = FilterService.FilterEmployeesBySearch(value,FilterInput); 
+                NotifyOfPropertyChange(nameof(SearchInput)); 
+            }
         }
         public string FilterInput
         {
             get { return _filterInput; }
-            set { _filterInput = value; FilterEmployeesBySearch(SearchInput); NotifyOfPropertyChange(nameof(FilterInput)); }
+            set 
+            { 
+                _filterInput = value; 
+                FilteredEmployees = FilterService.FilterEmployeesBySearch(SearchInput,value); 
+                NotifyOfPropertyChange(nameof(FilterInput)); 
+            }
         }
         public string[] FilterCategories { get; set; }
-        public Employee SelectedEmployee
-        {
-            get { return _selectedEmployee; }
-            set { _selectedEmployee = value; NotifyOfPropertyChange(nameof(SelectedEmployee)); }
-        }
         public GeneralFilter SelectedJobTitle
         {
             get { return _selectedJobTitle; }
-            set { _selectedJobTitle = value; FilterEmployeesByJobTitle(value); NotifyOfPropertyChange(nameof(SelectedJobTitle)); }
+            set 
+            { 
+                _selectedJobTitle = value; 
+                if(value!=null)
+                    FilteredEmployees = FilterService.FilterEmployeesByJobTitle(value); 
+                NotifyOfPropertyChange(nameof(SelectedJobTitle)); 
+            }
         }
         public GeneralFilter SelectedDept
         {
             get { return _selectedDept; }
-            set { _selectedDept = value; FilterEmployeesByDepartment(value); NotifyOfPropertyChange(nameof(SelectedDept)); }
+            set
+            { 
+                _selectedDept = value; 
+                FilteredEmployees = FilterService.FilterEmployeesByDepartment(value); 
+                NotifyOfPropertyChange(nameof(SelectedDept)); 
+            }
         }
         public string ViewMoreBtnContent
         {
             get { return _viewMoreBtnContent; }
             set { _viewMoreBtnContent = value; NotifyOfPropertyChange(nameof(ViewMoreBtnContent)); }
         }
-        public BindableCollection<Employee> FilteredEmployees
+        public ObservableCollection<Employee> FilteredEmployees
         {
             get { return _filteredEmployees; }
             set { _filteredEmployees = value; NotifyOfPropertyChange(nameof(FilteredEmployees)); }
         }
-        public BindableCollection<Employee> Employees
-        {
-            get { return _employees; }
-            set { _employees = value; NotifyOfPropertyChange(nameof(Employees)); }
-        }
-        public BindableCollection<GeneralFilter> Departments
+        public ObservableCollection<GeneralFilter> Departments
         {
             get { return _departments; }
             set { _departments = value; NotifyOfPropertyChange(nameof(Departments)); }
         }
-        public BindableCollection<GeneralFilter> JobTitles
+        public ObservableCollection<GeneralFilter> JobTitles
         {
             get { return _jobtitles; }
             set { _jobtitles = value; NotifyOfPropertyChange(nameof(JobTitles)); }
         }
 
+        public ObservableCollection<GeneralFilter> VisibleJobTitles
+        {
+            get { return _visibleJobTitles; }
+            set { _visibleJobTitles = value; NotifyOfPropertyChange(nameof(VisibleJobTitles)); }
+        }
+
+
         #endregion
         public HomeViewModel(IEventAggregator eventAggregator, AddEditEmployeeViewModel addEditEmpVM)
         {
             _eventAggregator = eventAggregator;
+            _eventAggregator.SubscribeOnPublishedThread(this);
             _addEditEmpVM = addEditEmpVM;
-            Employees = new BindableCollection<Employee>(EmployeeData.Employees);
-            FilteredEmployees = Employees;
-            Departments = new BindableCollection<GeneralFilter>(EmployeeData.Departments);
-            ViewMoreBtnContent = "view more";
+            _filteredEmployees = new(EmployeeData.Employees);
+            _departments = new BindableCollection<GeneralFilter>(EmployeeData.Departments);
+            _viewMoreBtnContent = "view more";
             FilterCategories = Enum.GetNames(typeof(FilterCategories));
-            FilterInput = FilterCategories[0];
-            LoadJobTitles();
-        }
-
-        private void LoadJobTitles()
-        {
-            if (EmployeeData.JobTitles.Count >= 6)
-                EmployeeData.JobTitles.Take(6).ToList().ForEach(job => job.IsVisible = true);
+            _filterInput = FilterCategories[0];
             JobTitles = new(EmployeeData.JobTitles);
-            
+            VisibleJobTitles = new(JobTitles.Take(6));
         }
-
         public void ViewMore()
         {
             if (ViewMoreBtnContent.Equals("view more", StringComparison.OrdinalIgnoreCase))
             {
-                JobTitles.Skip(6).ToList().ForEach(job => job.IsVisible = true) ;
+                VisibleJobTitles = JobTitles;
                 ViewMoreBtnContent = "view less";
             }
             else
             {
-                JobTitles.Skip(6).ToList().ForEach(job => job.IsVisible = false);
+                VisibleJobTitles = new(JobTitles.Take(6));
                 ViewMoreBtnContent = "view more";
             }
         }
-
         public void AddEmployee()
         {
+            _addEditEmpVM.OkBtnContent = "Add Employee";
+            _addEditEmpVM.HeadingText = Common.MessageStrings.AddEmpHeading;
+            _addEditEmpVM.SelectedEmployee = new();
+            _eventAggregator.PublishOnUIThreadAsync(_addEditEmpVM);
+            
+        }
+        public void EditEmployee(Employee selectedEmployee)
+        {
+            _addEditEmpVM.OkBtnContent = "Update";
+            _addEditEmpVM.SelectedEmployee = selectedEmployee;
+            _addEditEmpVM.HeadingText = Common.MessageStrings.EditEmpHeading;
             _eventAggregator.PublishOnUIThreadAsync(_addEditEmpVM);
         }
-        private void OnEditEmp()
+        public void DeleteEmployee(Employee selectedEmployee)
         {
-
-           
+            if (MessageBoxResult.Yes == MessageBox.Show($"{Common.MessageStrings.ConfirmDelete} {selectedEmployee.PreferredName}?", "Delete Employee", MessageBoxButton.YesNo))
+                FilteredEmployees.Remove(selectedEmployee);
         }
-        public void Delete()
+        public Task HandleAsync(Employee employee, CancellationToken cancellationToken)
         {
-
-            if (MessageBoxResult.Yes == MessageBox.Show($"Are you sure you want to delete {SelectedEmployee.PreferredName}?", "Delete Employee", MessageBoxButton.YesNo))
-                Employees.Remove(SelectedEmployee);
-        }
-
-        private void FilterEmployeesByJobTitle(GeneralFilter value)
-        {
-            FilteredEmployees = new BindableCollection<Employee>(Employees.Where(emp => emp.JobTitle.Equals(value.Name, StringComparison.OrdinalIgnoreCase)).ToList());
-        }
-        private void FilterEmployeesByDepartment(GeneralFilter value)
-        {
-            FilteredEmployees = new BindableCollection<Employee>(Employees.Where(emp => emp.Department.Equals(value.Name, StringComparison.OrdinalIgnoreCase)).ToList());
-
-        }
-        private void FilterEmployeesBySearch(string value)
-        {
-            if (!string.IsNullOrWhiteSpace(value))
-                FilteredEmployees = new BindableCollection<Employee>(Employees.Where(emp =>
-                                             (FilterInput.Equals("Name") && emp.PreferredName.Contains(value, StringComparison.OrdinalIgnoreCase))
-                                             || (FilterInput.Equals("ContactNumber") && emp.ContactNumber.ToString().Contains(value, StringComparison.OrdinalIgnoreCase))
-                                             || (FilterInput.Equals("Salary") && emp.Salary.ToString().Contains(value, StringComparison.OrdinalIgnoreCase))
-                                             || (FilterInput.Equals("Experience") && emp.ExperienceInYears.ToString().Contains(value, StringComparison.OrdinalIgnoreCase))).ToList());
+            if (EmployeeData.Employees.Any(emp=> emp.Id==employee.Id))
+                UpdateEmployee(employee); 
             else
-                FilteredEmployees = Employees;
+                AddNewEmployee(employee);
+            FilteredEmployees = new(EmployeeData.Employees);
+            JobTitles = new(EmployeeData.JobTitles);
+            return null;
+        }
+        private static void AddNewEmployee(Employee employee)
+        {
+            try
+            {
+                AddJobTitle(employee.JobTitle);
+                AddDepartment(employee.Department);
+                EmployeeData.Employees.Add(employee);
+                SyncJson<GeneralFilter>();
+                SyncJson<Employee>();
+                MessageBox.Show(Common.MessageStrings.EmployeeAdded, Common.MessageStrings.EmpAddedWinTitle);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"{Common.MessageStrings.EmpAddError} {e.Message}", Common.MessageStrings.EmpAddErrorWinTitle);
+            }
+        }
+        private static void UpdateEmployee(Employee employee)
+        {
+            try
+            {
+                EmployeeData.Employees.Remove(EmployeeData.Employees.FirstOrDefault(emp => emp.Id.Equals(employee.Id, StringComparison.OrdinalIgnoreCase)));
+                EmployeeData.Employees.Add(employee);
+                SyncJson<Employee>();
+                MessageBox.Show(Common.MessageStrings.EmpUpdateSuccess, Common.MessageStrings.EmpUpdateSuccessWinTitle);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"{Common.MessageStrings.EmpUpdateError} {e.Message}", Common.MessageStrings.EmpUpdateErrorWinTitle);
+            }
+        }
+        private static void AddJobTitle(string jobTitle)
+        {
+            if (!string.IsNullOrEmpty(jobTitle))
+            {
+                GeneralFilter job = EmployeeData.JobTitles.FirstOrDefault(jt => jt.Category == GeneralFilterCategories.JobTitle && jt.Name.Equals(jobTitle, StringComparison.OrdinalIgnoreCase));
+                if (job != null)
+                    job.Count += 1;
+                else
+                    EmployeeData.JobTitles.Add(new GeneralFilter() { Name = jobTitle, Count = 1, Category = GeneralFilterCategories.JobTitle });
+            }
+        }
+        private static void AddDepartment(string department)
+        {
+            if (!string.IsNullOrEmpty(department))
+            {
+                GeneralFilter dept = EmployeeData.Departments.FirstOrDefault(jt => jt.Category == GeneralFilterCategories.Department && jt.Name.Equals(department, StringComparison.OrdinalIgnoreCase));
+                if (dept != null)
+                    dept.Count += 1;
+                else
+                    EmployeeData.JobTitles.Add(new GeneralFilter() { Name = department, Count = 1, Category = GeneralFilterCategories.Department });
+            }
+        }
+        private static void SyncJson<T>()
+        {
+            JsonHelper.WriteToJson<T>();
         }
     }
 }

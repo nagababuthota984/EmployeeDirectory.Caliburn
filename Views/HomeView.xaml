@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EmployeeDirectory.Caliburn.Views" 
              xmlns:converters="clr-namespace:EmployeeDirectory.Caliburn.Converters" 
+             xmlns:cal="http://www.caliburnproject.org"
              xmlns:fa5="http://schemas.fontawesome.com/icons/"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -44,18 +45,8 @@
                 <TextBlock Text="Departments" Margin="0 0 0 3" FontWeight="{StaticResource Ed.FontWeight.DemiBold}" FontSize="{StaticResource Ed.FontSize.SecondaryFontSize}"/>
                 <ListBox x:Name="Departments" SelectedItem="{Binding SelectedDept}" ItemTemplate="{StaticResource GeneralFilterTemplate}" SelectionMode="Single" BorderBrush="Black" BorderThickness="0 0 0 1"/>
                 <TextBlock Margin="0 5 0 3" FontWeight="{StaticResource Ed.FontWeight.DemiBold}" FontSize="{StaticResource Ed.FontSize.SecondaryFontSize}" Text="Job Titles"/>
-                <ListBox x:Name="JobTitles" SelectedItem="{Binding SelectedJobTitle}" ItemTemplate="{StaticResource GeneralFilterTemplate}"  
-                         SelectionMode="Single" BorderThickness="0">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsVisible}" Value="False">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListBox>
+                <ListBox x:Name="VisibleJobTitles" SelectedItem="{Binding SelectedJobTitle}" ItemTemplate="{StaticResource GeneralFilterTemplate}"  
+                         SelectionMode="Single" BorderThickness="0" />
                 <Button HorizontalAlignment="Left" x:Name="ViewMore"
                         Foreground="{StaticResource Ed.Colors.PrimaryColour}" 
                         Background="Transparent" 
@@ -77,14 +68,12 @@
                          Style="{StaticResource Ed.Buttons.AddEmp}"
                          HorizontalAlignment="Right"/>
                 
-                <!--to be reviewed-->
-                <DataGrid x:Name="FilteredEmployees" AreRowDetailsFrozen="True" FrozenColumnCount="1"  Grid.Row="1" Grid.ColumnSpan="3" 
-                          SelectedItem="{Binding SelectedEmployee}" 
+                <DataGrid ItemsSource="{Binding FilteredEmployees}" AreRowDetailsFrozen="True" FrozenColumnCount="1"  Grid.Row="1" Grid.ColumnSpan="3" 
                           Margin="0 0 10 20" 
                           Style="{StaticResource Ed.DataGridStyle}"  
                           AlternatingRowBackground="#EEEEF2">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="150" Header="Name">
+                        <DataGridTemplateColumn Width="Auto" Header="Name">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock>
@@ -126,7 +115,7 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTemplateColumn >
+                        <DataGridTemplateColumn Header="Actions" >
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Grid >
@@ -134,14 +123,14 @@
                                             <ColumnDefinition/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
-                                        <Button  BorderThickness="0" BorderBrush="Transparent" Background="Transparent">
+                                        <Button cal:Message.Attach="[Click]=[EditEmployee($DataContext)]" BorderThickness="0" BorderBrush="Transparent" Background="Transparent">
                                             <Button.Content>
-                                                <fa5:ImageAwesome Icon="Solid_UserEdit" Width="20" Height="20" Foreground="{StaticResource Ed.Colors.PrimaryColour}"/>
+                                                <fa5:ImageAwesome  Icon="Solid_UserEdit" Width="20" Height="20" Foreground="{StaticResource Ed.Colors.PrimaryColour}"/>
                                             </Button.Content>
                                         </Button>
-                                        <Button Grid.Column="1" BorderThickness="0" BorderBrush="Transparent" Background="Transparent">
+                                        <Button cal:Message.Attach="[Click]=[DeleteEmployee($DataContext)]" Grid.Column="1" BorderThickness="0" BorderBrush="Transparent" Background="Transparent">
                                             <Button.Content>
-                                                <fa5:ImageAwesome x:Name="Delete" Icon="Solid_Trash" Width="20" Height="20" Foreground="Red"/>
+                                                <fa5:ImageAwesome Icon="Solid_Trash" Width="20" Height="20" Foreground="Red"/>
                                             </Button.Content>
                                         </Button>
                                     </Grid>
@@ -152,7 +141,7 @@
                 </DataGrid>
                 <WrapPanel Orientation="Horizontal" Style="{StaticResource Ed.AdvancedFilterStyle}" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <TextBlock Margin="0 5 5 0" Text="Search:"/>
-                    <TextBox Name="Search" Text="{Binding SearchInput, UpdateSourceTrigger=PropertyChanged}" Padding="5" Height="30" Width="150" />
+                    <TextBox x:Name="SearchInput" Padding="5" Height="30" Width="150" />
                 </WrapPanel>
                 <WrapPanel Orientation="Horizontal" Style="{StaticResource Ed.AdvancedFilterStyle}" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Center">
                     <TextBlock Margin="0 5 5 0" Text="Filter By:"/>

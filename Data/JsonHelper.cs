@@ -38,8 +38,8 @@ namespace EmployeeDirectory.Caliburn.Data
             string data = ReadFromJson("GeneralFilters");
             if (!string.IsNullOrWhiteSpace(data))
             {
-                EmployeeData.JobTitles = JsonConvert.DeserializeObject<List<GeneralFilter>>(data).Where(filter => filter.Category == GeneralFilterCategories.JobTitle).ToList();
-                EmployeeData.Departments = JsonConvert.DeserializeObject<List<GeneralFilter>>(data).Where(filter => filter.Category == GeneralFilterCategories.Department).ToList();
+                EmployeeData.JobTitles = JsonConvert.DeserializeObject<List<GeneralFilter>>(data).Where(filter => filter.Category == GeneralFilterCategories.JobTitle && filter.Count > 0).ToList();
+                EmployeeData.Departments = JsonConvert.DeserializeObject<List<GeneralFilter>>(data).Where(filter => filter.Category == GeneralFilterCategories.Department && filter.Count > 0).ToList();
             }
         }
     }
